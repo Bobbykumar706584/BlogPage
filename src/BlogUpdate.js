@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useHistory, Link } from 'react-router-dom';
 import useFetch from './useFetch';
 
@@ -14,12 +14,14 @@ const BlogUpdate = () => {
 	const {data: blog, isLoading, error} = useFetch("http://localhost:8000/blogs/" + id);
 	
 	const handleSubmit = (e) => {
+		e.preventDefault();
 		setIsPending(true);
+		const data = {title, body, author}
 
 		fetch("http://localhost:8000/blogs/"+ blog.id, {
 			method : "PUT",
 			headers : {'Content-type': 'application/json; charset=UTF-8',},
-			body : JSON.stringify(blog)
+			body : JSON.stringify(data)
 		})
 		.then(() => {
 			setIsPending(false)
@@ -27,6 +29,15 @@ const BlogUpdate = () => {
 
 		})
 	}	
+
+	useEffect(() => {
+		if(blog){
+			setTitle(blog.title)
+			setBody(blog.body)
+			setAuthor(blog.author)
+		}
+	}, [blog])
+
 	const cancelHandle = () =>{
 		history.push('/')
 	}
